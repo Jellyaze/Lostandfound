@@ -1,65 +1,21 @@
 {
-  "name": "maginghotdog",
-  "license": "0BSD",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
-  },
-  "dependencies": {
-    "@react-native-async-storage/async-storage": "^2.2.0",
-    "@react-native-community/datetimepicker": "^8.5.1",
-    "@react-native-masked-view/masked-view": "0.3.2",
-    "@react-navigation/bottom-tabs": "^7.8.9",
-    "@react-navigation/native": "^7.1.22",
-    "@react-navigation/native-stack": "^7.8.3",
-    "@supabase/supabase-js": "^2.86.0",
-    "expo": "~54.0.25",
-    "expo-image-picker": "~17.0.8",
-    "expo-linking": "~8.0.9",
-    "expo-location": "~19.0.7",
-    "expo-status-bar": "~3.0.8",
-    "lodash": "^4.17.21",
-    "react": "19.1.0",
-    "react-native": "0.81.5",
-    "react-native-dropdown-picker": "^5.4.6",
-    "react-native-element-dropdown": "^2.12.4",
-    "react-native-gesture-handler": "~2.28.0",
-    "react-native-maps": "1.20.1",
-    "react-native-reanimated": "~4.1.1",
-    "react-native-safe-area-context": "~5.6.0",
-    "react-native-screens": "~4.16.0",
-    "react-native-url-polyfill": "^3.0.0",
-    "react-native-webview": "^13.16.0",
-    "react-native-worklets": "0.5.1"
-  },
-  "private": true,
-  "devDependencies": {
-    "@babel/cli": "^7.28.3",
-    "@babel/core": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
-    "@types/react": "~19.1.10",
-    "typescript": "~5.9.2"
-  },
-  "description": "",
-  "keywords": [],
-  "author": "",
-  "type": "commonjs",
-  "extra": {
-    "eas": {
-      "projectId": "6413c548-3353-4529-849b-5213978cb401"
-    }
-  },
   "expo": {
+    "name": "Seeker",
+    "slug": "Seeker",
+    "version": "1.0.0",
+    "scheme": "seeker",
+    "plugins": [
+      "expo-web-browser"
+    ],
     "android": {
       "package": "com.jellyaze.maginghotdog"
     },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "extra": {
       "eas": {
-        "projectId": "6413c548-3353-4529-849b-5213978cb401"
+        "projectId": "5c3f199d-882a-4317-bbda-424b83ef3227"
       }
     }
   }

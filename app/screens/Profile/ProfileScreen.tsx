@@ -5,8 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Colors } from '../../constants/Colors';
 
 export default function ProfileScreen({ navigation }: any) {
-  const { user, signOut } = useAuth();
-  const profile = (user as any)?.profile;
+  const { user, profile, signOut } = useAuth();
 
   const handleLogout = async () => {
     await signOut();
@@ -26,8 +25,10 @@ export default function ProfileScreen({ navigation }: any) {
               style={styles.profileImage}
             />
           </View>
+
           <Text style={styles.name}>{profile?.full_name || 'User'}</Text>
           <Text style={styles.email}>{user?.email}</Text>
+
           {profile?.label && (
             <View style={styles.labelBadge}>
               <Text style={styles.labelText}>{profile.label}</Text>
@@ -38,15 +39,17 @@ export default function ProfileScreen({ navigation }: any) {
         <View style={styles.infoSection}>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Age:</Text>
-            <Text style={styles.infoValue}>{profile?.age || 'N/A'}</Text>
+            <Text style={styles.infoValue}>{profile?.age ?? 'N/A'}</Text>
           </View>
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Gender:</Text>
-            <Text style={styles.infoValue}>{profile?.gender || 'N/A'}</Text>
+            <Text style={styles.infoValue}>{profile?.gender ?? 'N/A'}</Text>
           </View>
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Contact:</Text>
-            <Text style={styles.infoValue}>{profile?.contact_number || 'N/A'}</Text>
+            <Text style={styles.infoValue}>{profile?.contact_number ?? 'N/A'}</Text>
           </View>
         </View>
 

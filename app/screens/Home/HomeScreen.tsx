@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, FlatList, RefreshControl, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, RefreshControl, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SearchBar from '../../components/ui/SearchBar';
 import LostFoundToggle from '../../components/ui/LostFoundToggle';
@@ -7,7 +7,7 @@ import RecentItems from '../../components/posts/RecentItems';
 import ItemList from '../../components/posts/ItemList';
 import { getPosts, searchPosts } from '../../services/postService';
 import { Post } from '../../services/postService';
-import { Colors } from '../../constants/Colors';
+import { colors } from '../../constants/Colors';
 
 export default function HomeScreen({ navigation }: any) {
   const [isLost, setIsLost] = useState(true);
@@ -67,8 +67,13 @@ export default function HomeScreen({ navigation }: any) {
   const recentData = posts.slice(0, 5);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Seeker</Text>
+          <Text style={styles.headerSubtitle}>Lost & Found Community</Text>
+        </View>
+
         <SearchBar
           isLost={isLost}
           isSearching={isSearching}
@@ -81,19 +86,48 @@ export default function HomeScreen({ navigation }: any) {
         {!isSearching && (
           <>
             <LostFoundToggle isLost={isLost} setIsLost={setIsLost} />
-            
+
             <View style={styles.quickActionsContainer}>
-              <TouchableOpacity 
-                style={[styles.quickActionButton, styles.lostButton]} 
+              <TouchableOpacity
+                style={[
+                  styles.quickActionButton,
+                  isLost ? styles.lostButtonActive : styles.lostButton
+                ]}
                 onPress={handleShowLostItems}
+                activeOpacity={0.8}
               >
-                <Text style={styles.quickActionText}>Lost Items</Text>
+                <View style={styles.quickActionContent}>
+                  <Text style={styles.quickActionEmoji}>🔍</Text>
+                  <Text
+                    style={[
+                      styles.quickActionText,
+                      isLost && styles.quickActionTextActive
+                    ]}
+                  >
+                    Lost Items
+                  </Text>
+                </View>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.quickActionButton, styles.foundButton]} 
+
+              <TouchableOpacity
+                style={[
+                  styles.quickActionButton,
+                  !isLost ? styles.foundButtonActive : styles.foundButton
+                ]}
                 onPress={handleShowFoundItems}
+                activeOpacity={0.8}
               >
-                <Text style={styles.quickActionText}>Found Items</Text>
+                <View style={styles.quickActionContent}>
+                  <Text style={styles.quickActionEmoji}>✨</Text>
+                  <Text
+                    style={[
+                      styles.quickActionText,
+                      !isLost && styles.quickActionTextActive
+                    ]}
+                  >
+                    Found Items
+                  </Text>
+                </View>
               </TouchableOpacity>
             </View>
 
@@ -101,11 +135,16 @@ export default function HomeScreen({ navigation }: any) {
           </>
         )}
 
-        <ItemList 
-          data={displayData} 
+        <ItemList
+          data={displayData}
           navigation={navigation}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
           }
         />
       </View>
@@ -114,32 +153,82 @@ export default function HomeScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 12,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    fontWeight: '500',
   },
   quickActionsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
   },
   quickActionButton: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 16,
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    shadowColor: colors.textPrimary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   lostButton: {
-    backgroundColor: Colors.error,
+    borderColor: colors.border,
+  },
+  lostButtonActive: {
+    backgroundColor: colors.danger,
+    borderColor: colors.danger,
+    shadowColor: colors.danger,
+    shadowOpacity: 0.2,
   },
   foundButton: {
-    backgroundColor: Colors.success,
+    borderColor: colors.border,
+  },
+  foundButtonActive: {
+    backgroundColor: colors.success,
+    borderColor: colors.success,
+    shadowColor: colors.success,
+    shadowOpacity: 0.2,
+  },
+  quickActionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  quickActionEmoji: {
+    fontSize: 18,
   },
   quickActionText: {
-    color: Colors.white,
-    fontWeight: 'bold',
-    fontSize: 14,
+    color: colors.textSecondary,
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  quickActionTextActive: {
+    color: '#FFFFFF',
   },
 });

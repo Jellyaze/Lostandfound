@@ -13,8 +13,8 @@ export default function ProfileDetailsScreen({ navigation }: any) {
 
   const [loading, setLoading] = useState(false);
 
-  const [profileImage, setProfileImage] = useState<string | null>(profile?.photo_url || null);
-  const [fullName, setFullName] = useState(profile?.name || '');
+  const [profileImage, setProfileImage] = useState<string | null>(profile?.profile_image_url || null);
+  const [fullName, setFullName] = useState(profile?.full_name || '');
   const [age, setAge] = useState(profile?.age?.toString() || '');
   const [contactNumber, setContactNumber] = useState(profile?.contact_number || '');
 
@@ -90,11 +90,12 @@ export default function ProfileDetailsScreen({ navigation }: any) {
     setLoading(true);
 
     const { error } = await updateProfile({
-      name: fullName.trim(),
+      full_name: fullName.trim(),
       label,
       age: parseInt(age),
       gender,
       contact_number: contactNumber.trim(),
+      profile_image_url: profileImage,
     });
 
     setLoading(false);
@@ -138,6 +139,7 @@ export default function ProfileDetailsScreen({ navigation }: any) {
           <Text style={styles.label}>Label / Role</Text>
           <View style={styles.dropdownWrapper}>
             <DropDownPicker
+              listMode="MODAL"
               open={labelOpen}
               value={label}
               items={labelItems}
@@ -149,7 +151,7 @@ export default function ProfileDetailsScreen({ navigation }: any) {
             />
           </View>
 
-          <Text style={styles.label}>Name</Text>
+          <Text style={styles.label}>Full Name</Text>
           <TextInput
             style={styles.input}
             value={fullName}
@@ -169,6 +171,7 @@ export default function ProfileDetailsScreen({ navigation }: any) {
           <Text style={styles.label}>Gender</Text>
           <View style={styles.dropdownWrapper}>
             <DropDownPicker
+              listMode="MODAL"
               open={genderOpen}
               value={gender}
               items={genderItems}
@@ -192,7 +195,12 @@ export default function ProfileDetailsScreen({ navigation }: any) {
           <Text style={styles.label}>Identification</Text>
           <TextInput style={styles.input} placeholder="ID Number (Optional)" editable={false} />
 
-          <PrimaryButton title="Save" onPress={handleSave} loading={loading} style={styles.saveButton} />
+          <PrimaryButton
+            title="Save"
+            onPress={handleSave}
+            loading={loading}
+            style={styles.saveButton}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

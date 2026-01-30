@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -11,14 +11,14 @@ export default function CreateProfileScreen({ navigation }: any) {
   const auth = useAuth() as any;
   const { user, updateProfile } = auth;
   const [loading, setLoading] = useState(false);
-  
+
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [fullName, setFullName] = useState('');
   const [age, setAge] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [idFrontImage, setIdFrontImage] = useState<string | null>(null);
   const [idBackImage, setIdBackImage] = useState<string | null>(null);
-  
+
   const [labelOpen, setLabelOpen] = useState(false);
   const [label, setLabel] = useState<string | null>(null);
   const [labelItems] = useState([
@@ -149,6 +149,7 @@ export default function CreateProfileScreen({ navigation }: any) {
           <Text style={styles.label}>Label</Text>
           <View style={styles.dropdownWrapper}>
             <DropDownPicker
+              listMode="MODAL"
               open={labelOpen}
               value={label}
               items={labelItems}
@@ -182,6 +183,7 @@ export default function CreateProfileScreen({ navigation }: any) {
           <Text style={styles.label}>Gender</Text>
           <View style={styles.dropdownWrapper}>
             <DropDownPicker
+              listMode="MODAL"
               open={genderOpen}
               value={gender}
               items={genderItems}
@@ -216,6 +218,7 @@ export default function CreateProfileScreen({ navigation }: any) {
                 )}
               </TouchableOpacity>
             </View>
+
             <View style={styles.idImageWrapper}>
               <Text style={styles.idLabel}>Back</Text>
               <TouchableOpacity onPress={() => pickIdImage('back')} style={styles.idImageBox}>

@@ -28,27 +28,37 @@ export default function RecentItems({ horizontalData, navigation }: RecentItemsP
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Recent Items</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Recent Items</Text>
+        <Text style={styles.subtitle}>Latest updates</Text>
+      </View>
+
       <FlatList
         data={horizontalData}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
         renderItem={({ item }) => {
           const imageUrl = (item as Post).image_urls && (item as Post).image_urls.length > 0
             ? (item as Post).image_urls[0]
             : (item as LightItem).image || require('../../assets/lostitem.png');
 
           return (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.item}
               onPress={() => navigation.navigate('ViewPost', { postId: item.id })}
+              activeOpacity={0.9}
             >
-              <Image 
-                source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl} 
-                style={styles.image} 
-              />
-              <Text style={styles.itemText} numberOfLines={1}>{(item as Post).title ?? (item as LightItem).name}</Text>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl}
+                  style={styles.image}
+                />
+              </View>
+              <Text style={styles.itemText} numberOfLines={2}>
+                {(item as Post).title ?? (item as LightItem).name}
+              </Text>
             </TouchableOpacity>
           );
         }}
@@ -59,28 +69,53 @@ export default function RecentItems({ horizontalData, navigation }: RecentItemsP
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 10,
-    paddingLeft: 20,
+    marginVertical: 12,
+    marginBottom: 16,
+  },
+  header: {
+    paddingHorizontal: 16,
+    marginBottom: 12,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: '700',
     color: Colors.text.primary,
+    marginBottom: 2,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: Colors.text.secondary,
+    fontWeight: '500',
+  },
+  listContent: {
+    paddingHorizontal: 12,
   },
   item: {
-    marginRight: 15,
-    width: 100,
+    marginHorizontal: 6,
+    width: 120,
+  },
+  imageContainer: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: Colors.border ?? 'rgba(0,0,0,0.06)',
+    shadowColor: Colors.text.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
   },
   image: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
+    width: 120,
+    height: 120,
   },
   itemText: {
-    marginTop: 5,
-    fontSize: 12,
-    textAlign: 'center',
-    color: Colors.text.secondary,
+    marginTop: 8,
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    lineHeight: 18,
   },
 });

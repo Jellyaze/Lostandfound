@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/Colors';
+import { colors } from '../../constants/Colors';
 import PrimaryButton from '../../components/ui/PrimaryButton';
 
 export default function VerifyReturnScreen({ route, navigation }: any) {
   const { claimId } = route.params;
   const [returnCode, setReturnCode] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
-  const [timer, setTimer] = useState(300); 
+  const [timer, setTimer] = useState(300);
 
   useEffect(() => {
     generateCode();
@@ -56,14 +56,14 @@ export default function VerifyReturnScreen({ route, navigation }: any) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
           <Text style={styles.backButton}>← Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Verify Return</Text>
         <View style={{ width: 50 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.noteContainer}>
           <Text style={styles.noteIcon}>📌</Text>
           <Text style={styles.noteText}>
@@ -81,8 +81,9 @@ export default function VerifyReturnScreen({ route, navigation }: any) {
               keyboardType="numeric"
               maxLength={4}
               placeholder="0000"
+              placeholderTextColor={colors.textMuted}
             />
-            <TouchableOpacity onPress={() => setReturnCode('')}>
+            <TouchableOpacity onPress={() => setReturnCode('')} activeOpacity={0.7}>
               <Text style={styles.clearButton}>Clear</Text>
             </TouchableOpacity>
           </View>
@@ -94,7 +95,7 @@ export default function VerifyReturnScreen({ route, navigation }: any) {
             <Text style={styles.generatedCode}>{generatedCode}</Text>
             <View style={styles.timerContainer}>
               <Text style={styles.timerText}>Time remaining: {formatTime(timer)}</Text>
-              <TouchableOpacity onPress={generateCode}>
+              <TouchableOpacity onPress={generateCode} activeOpacity={0.7}>
                 <Text style={styles.regenerateButton}>Regenerate Code</Text>
               </TouchableOpacity>
             </View>
@@ -114,35 +115,40 @@ export default function VerifyReturnScreen({ route, navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: Colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGray,
+    borderBottomColor: colors.border,
   },
   backButton: {
     fontSize: 16,
-    color: Colors.primary,
+    color: colors.primary,
+    fontWeight: '600',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.text.primary,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   scrollContent: {
     padding: 20,
+    paddingBottom: 32,
   },
   noteContainer: {
     flexDirection: 'row',
-    backgroundColor: Colors.primaryLight,
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: colors.primarySoft,
+    padding: 16,
+    borderRadius: 14,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   noteIcon: {
     fontSize: 20,
@@ -151,19 +157,23 @@ const styles = StyleSheet.create({
   noteText: {
     flex: 1,
     fontSize: 14,
-    color: Colors.white,
+    color: colors.textPrimary,
+    fontWeight: '500',
+    lineHeight: 18,
   },
   section: {
-    backgroundColor: Colors.white,
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text.primary,
-    marginBottom: 15,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 14,
   },
   codeInputContainer: {
     flexDirection: 'row',
@@ -171,42 +181,47 @@ const styles = StyleSheet.create({
   },
   codeInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 10,
-    padding: 15,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     fontSize: 24,
     textAlign: 'center',
     letterSpacing: 10,
     marginRight: 10,
+    backgroundColor: colors.background,
+    color: colors.textPrimary,
+    fontWeight: '700',
   },
   clearButton: {
-    color: Colors.primary,
-    fontWeight: 'bold',
+    color: colors.accent,
+    fontWeight: '700',
   },
   generatedCodeContainer: {
     alignItems: 'center',
   },
   generatedCode: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: Colors.primary,
+    fontSize: 34,
+    fontWeight: '800',
+    color: colors.primary,
     letterSpacing: 10,
-    marginBottom: 15,
+    marginBottom: 12,
   },
   timerContainer: {
     alignItems: 'center',
   },
   timerText: {
     fontSize: 14,
-    color: Colors.text.secondary,
+    color: colors.textSecondary,
     marginBottom: 10,
+    fontWeight: '500',
   },
   regenerateButton: {
-    color: Colors.primary,
-    fontWeight: 'bold',
+    color: colors.primary,
+    fontWeight: '700',
   },
   verifyButton: {
-    marginTop: 10,
+    marginTop: 8,
   },
 });

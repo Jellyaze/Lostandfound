@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 import { getUserPosts, deletePost, updatePost } from '../../services/postService';
 import { Post } from '../../services/postService';
-import { Colors } from '../../constants/Colors';
+import { colors } from '../../constants/Colors';
 import { formatDate, formatTime } from '../../utils/formatDate';
 
 export default function MyPostsScreen({ navigation }: any) {
@@ -20,7 +20,7 @@ export default function MyPostsScreen({ navigation }: any) {
 
   const loadPosts = async () => {
     if (!user) return;
-    
+
     const { data, error } = await getUserPosts(user.id);
     if (!error && data) {
       setPosts(data);
@@ -34,25 +34,21 @@ export default function MyPostsScreen({ navigation }: any) {
   };
 
   const handleDelete = (postId: string) => {
-    Alert.alert(
-      'Delete Post',
-      'Are you sure you want to delete this post?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            const { error } = await deletePost(postId);
-            if (!error) {
-              loadPosts();
-            } else {
-              Alert.alert('Error', 'Failed to delete post');
-            }
-          },
+    Alert.alert('Delete Post', 'Are you sure you want to delete this post?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          const { error } = await deletePost(postId);
+          if (!error) {
+            loadPosts();
+          } else {
+            Alert.alert('Error', 'Failed to delete post');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleStatusChange = async (postId: string, newStatus: 'claimed' | 'returned') => {
@@ -76,32 +72,47 @@ export default function MyPostsScreen({ navigation }: any) {
   };
 
   const renderPost = ({ item }: { item: Post }) => {
-    const imageUrl = item.image_urls && item.image_urls.length > 0 
-      ? item.image_urls[0] 
-      : require('../../assets/lostitem.png');
+    const imageUrl =
+      item.image_urls && item.image_urls.length > 0
+        ? item.image_urls[0]
+        : require('../../assets/lostitem.png');
 
     return (
       <View style={styles.postCard}>
         <TouchableOpacity
           style={styles.postContent}
           onPress={() => navigation.navigate('ViewPost', { postId: item.id })}
+          activeOpacity={0.95}
         >
-          <Image 
-            source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl} 
-            style={styles.thumbnail} 
-          />
-          <View style={styles.postInfo}>
-            <Text style={styles.postTitle} numberOfLines={1}>{item.title}</Text>
-            <View style={styles.detailRow}>
-              <Image source={require('../../assets/loclogo.png')} style={styles.icon}/>
-              <Text style={styles.detailText} numberOfLines={1}>{item.location_name}</Text>
+          <View style={styles.imageContainer}>
+            <Image
+              source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl}
+              style={styles.thumbnail}
+            />
+            <View style={[styles.typeBadge, item.type === 'lost' ? styles.lostBadge : styles.foundBadge]}>
+              <Text style={styles.typeBadgeText}>{item.type === 'lost' ? 'Lost' : 'Found'}</Text>
             </View>
+          </View>
+
+          <View style={styles.postInfo}>
+            <Text style={styles.postTitle} numberOfLines={2}>
+              {item.title}
+            </Text>
+
             <View style={styles.detailRow}>
-              <Image source={require('../../assets/datelogo.png')} style={styles.icon}/>
+              <Text style={styles.detailIcon}>📍</Text>
+              <Text style={styles.detailText} numberOfLines={1}>
+                {item.location_name}
+              </Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.detailIcon}>📅</Text>
               <Text style={styles.detailText}>{formatDate(item.date_lost_found)}</Text>
             </View>
+
             <View style={styles.detailRow}>
-              <Image source={require('../../assets/timelogo.png')} style={styles.icon}/>
+              <Text style={styles.detailIcon}>🕐</Text>
               <Text style={styles.detailText}>{formatTime(item.date_lost_found)}</Text>
             </View>
           </View>
@@ -110,44 +121,60 @@ export default function MyPostsScreen({ navigation }: any) {
         <View style={styles.actionsContainer}>
           <View style={styles.buttonRow}>
             <TouchableOpacity
-              style={[styles.actionButton, styles.deleteButton]}
-              onPress={() => handleDelete(item.id)}
-            >
-              <Text style={styles.buttonText}>Delete</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
               style={[styles.actionButton, styles.editButton]}
               onPress={() => navigation.navigate('EditPost', { postId: item.id })}
+              activeOpacity={0.8}
             >
+              <Text style={styles.actionButtonIcon}>✏️</Text>
               <Text style={styles.buttonText}>Edit</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.deleteButton]}
+              onPress={() => handleDelete(item.id)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.actionButtonIcon}>🗑️</Text>
+              <Text style={styles.buttonText}>Delete</Text>
+            </TouchableOpacity>
           </View>
+
           <View style={styles.buttonRow}>
             {item.type === 'found' ? (
               <TouchableOpacity
                 style={[styles.actionButton, styles.claimedButton]}
                 onPress={() => handleStatusChange(item.id, 'claimed')}
+                activeOpacity={0.8}
               >
-                <Text style={styles.buttonText}>Claimed</Text>
+                <Text style={styles.actionButtonIcon}>✅</Text>
+                <Text style={styles.buttonText}>Mark Claimed</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
                 style={[styles.actionButton, styles.returnedButton]}
                 onPress={() => handleStatusChange(item.id, 'returned')}
+                activeOpacity={0.8}
               >
-                <Text style={styles.buttonText}>Returned</Text>
+                <Text style={styles.actionButtonIcon}>↩️</Text>
+                <Text style={styles.buttonText}>Mark Returned</Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
 
         <View style={styles.toggleContainer}>
-          <Text style={styles.toggleLabel}>Post Visibility</Text>
+          <View style={styles.toggleInfo}>
+            <Text style={styles.toggleLabel}>Post Visibility</Text>
+            <Text style={styles.toggleSubtext}>
+              {item.status === 'active' ? 'Visible to everyone' : 'Hidden from feed'}
+            </Text>
+          </View>
+
           <Switch
             value={item.status === 'active'}
             onValueChange={() => handleToggleVisibility(item.id, item.status)}
-            trackColor={{ false: Colors.lightGray, true: Colors.primaryLight }}
-            thumbColor={item.status === 'active' ? Colors.primary : Colors.gray}
+            trackColor={{ false: colors.border, true: colors.primarySoft }}
+            thumbColor={item.status === 'active' ? colors.primary : colors.textMuted}
           />
         </View>
       </View>
@@ -155,25 +182,33 @@ export default function MyPostsScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>My Posts</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('CreatePost')}>
-          <Text style={styles.createButton}>+ Create</Text>
+        <View>
+          <Text style={styles.title}>My Posts</Text>
+          <Text style={styles.subtitle}>Manage your listings</Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate('CreatePost')}
+          style={styles.createButton}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.createButtonText}>+ New</Text>
         </TouchableOpacity>
       </View>
 
       {posts.length === 0 ? (
         <View style={styles.emptyContainer}>
+          <Text style={styles.emptyIcon}>📝</Text>
           <Text style={styles.emptyText}>No posts yet</Text>
+          <Text style={styles.emptySubtext}>Create your first post to get started</Text>
           <TouchableOpacity
             style={styles.createFirstButton}
             onPress={() => navigation.navigate('CreatePost')}
+            activeOpacity={0.8}
           >
-            <Text style={styles.createFirstButtonText}>Create Your First Post</Text>
+            <Text style={styles.createFirstButtonText}>Create Post</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -182,9 +217,15 @@ export default function MyPostsScreen({ navigation }: any) {
           keyExtractor={(item) => item.id}
           renderItem={renderPost}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
           }
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </SafeAreaView>
@@ -194,139 +235,221 @@ export default function MyPostsScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: Colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGray,
-  },
-  backButton: {
-    fontSize: 16,
-    color: Colors.primary,
+    borderBottomColor: colors.border,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.text.primary,
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: 2,
+    fontWeight: '500',
   },
   createButton: {
-    fontSize: 16,
-    color: Colors.primary,
-    fontWeight: 'bold',
+    backgroundColor: colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  createButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 15,
   },
   listContent: {
-    padding: 10,
+    padding: 16,
   },
   postCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 10,
-    marginVertical: 8,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    marginBottom: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
+    shadowColor: colors.textPrimary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   postContent: {
     flexDirection: 'row',
-    padding: 10,
+    padding: 12,
+  },
+  imageContainer: {
+    position: 'relative',
+    marginRight: 12,
   },
   thumbnail: {
     width: 100,
     height: 100,
-    borderRadius: 10,
-    marginRight: 10,
+    borderRadius: 12,
+    backgroundColor: colors.border,
+  },
+  typeBadge: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  lostBadge: {
+    backgroundColor: colors.danger,
+  },
+  foundBadge: {
+    backgroundColor: colors.success,
+  },
+  typeBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
   },
   postInfo: {
     flex: 1,
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
   },
   postTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text.primary,
-    marginBottom: 5,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 6,
+    lineHeight: 20,
   },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 2,
   },
-  icon: {
-    width: 12,
-    height: 12,
+  detailIcon: {
+    fontSize: 12,
     marginRight: 6,
   },
   detailText: {
-    fontSize: 11,
-    color: Colors.text.secondary,
+    fontSize: 12,
+    color: colors.textSecondary,
     flex: 1,
+    fontWeight: '500',
   },
   actionsContainer: {
-    padding: 10,
+    padding: 12,
     borderTopWidth: 1,
-    borderTopColor: Colors.lightGray,
+    borderTopColor: colors.border,
+    gap: 8,
   },
   buttonRow: {
     flexDirection: 'row',
-    gap: 10,
-    marginBottom: 10,
+    gap: 8,
   },
   actionButton: {
     flex: 1,
-    padding: 10,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    gap: 6,
   },
-  deleteButton: {
-    backgroundColor: Colors.error,
+  actionButtonIcon: {
+    fontSize: 14,
   },
   editButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.accent,
+  },
+  deleteButton: {
+    backgroundColor: colors.danger,
   },
   claimedButton: {
-    backgroundColor: Colors.success,
+    backgroundColor: colors.success,
   },
   returnedButton: {
-    backgroundColor: Colors.warning,
+    backgroundColor: colors.primary,
   },
   buttonText: {
-    color: Colors.white,
-    fontWeight: 'bold',
-    fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 13,
   },
   toggleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: Colors.lightGray,
+    borderTopColor: colors.border,
+    backgroundColor: colors.primarySoft,
+  },
+  toggleInfo: {
+    flex: 1,
   },
   toggleLabel: {
     fontSize: 14,
-    color: Colors.text.primary,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginBottom: 2,
+  },
+  toggleSubtext: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontWeight: '500',
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyIcon: {
+    fontSize: 64,
+    marginBottom: 16,
   },
   emptyText: {
-    fontSize: 18,
-    color: Colors.text.secondary,
-    marginBottom: 20,
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 24,
+    fontWeight: '500',
   },
   createFirstButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 12,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
   },
   createFirstButtonText: {
-    color: Colors.white,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '700',
     fontSize: 16,
   },
 });

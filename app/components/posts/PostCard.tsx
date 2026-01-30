@@ -34,24 +34,36 @@ export default function PostCard({ post, onPress }: PostCardProps) {
     ((post as LightItem).date ? `${(post as LightItem).date} ${(post as LightItem).time ?? ''}`.trim() : undefined);
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.95}>
       <View style={styles.cardContent}>
-        <Image 
-          source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl} 
-          style={styles.image} 
-        />
+        <View style={styles.imageContainer}>
+          <Image
+            source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl}
+            style={styles.image}
+          />
+        </View>
+
         <View style={styles.info}>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          <Text style={styles.title} numberOfLines={2}>{title}</Text>
+
           <View style={styles.detailRow}>
-            <Image source={require('../../assets/loclogo.png')} style={styles.icon}/>
+            <View style={styles.iconWrapper}>
+              <Text style={styles.iconEmoji}>📍</Text>
+            </View>
             <Text style={styles.detailText} numberOfLines={1}>{locationName}</Text>
           </View>
+
           <View style={styles.detailRow}>
-            <Image source={require('../../assets/datelogo.png')} style={styles.icon}/>
+            <View style={styles.iconWrapper}>
+              <Text style={styles.iconEmoji}>📅</Text>
+            </View>
             <Text style={styles.detailText}>{formatDate(rawDate)}</Text>
           </View>
+
           <View style={styles.detailRow}>
-            <Image source={require('../../assets/timelogo.png')} style={styles.icon}/>
+            <View style={styles.iconWrapper}>
+              <Text style={styles.iconEmoji}>🕐</Text>
+            </View>
             <Text style={styles.detailText}>{formatTime(rawDate)}</Text>
           </View>
         </View>
@@ -63,44 +75,64 @@ export default function PostCard({ post, onPress }: PostCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.white,
-    borderRadius: 10,
-    marginVertical: 5,
-    marginHorizontal: 10,
+    borderRadius: 16,
+    marginVertical: 6,
+    marginHorizontal: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.border ?? 'rgba(0,0,0,0.06)',
+    shadowColor: Colors.text?.primary ?? '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   cardContent: {
     flexDirection: 'row',
-    padding: 5,
+    padding: 12,
+  },
+  imageContainer: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginRight: 12,
   },
   image: {
-    width: 119,
-    height: 98,
-    borderRadius: 10,
-    marginRight: 10,
+    width: 110,
+    height: 110,
+    backgroundColor: Colors.border ?? 'rgba(0,0,0,0.05)',
   },
   info: {
     flex: 1,
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontWeight: '700',
     color: Colors.text.primary,
-    marginBottom: 5,
+    marginBottom: 8,
+    lineHeight: 22,
   },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 2,
+    marginVertical: 3,
   },
-  icon: {
-    width: 13,
-    height: 13,
+  iconWrapper: {
+    width: 20,
+    alignItems: 'center',
     marginRight: 8,
   },
+  iconEmoji: {
+    fontSize: 14,
+  },
   detailText: {
-    fontSize: 12,
+    fontSize: 13,
     color: Colors.text.secondary,
     flex: 1,
+    fontWeight: '500',
   },
 });

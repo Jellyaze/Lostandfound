@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as ImagePicker from 'expo-image-picker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useAuth } from '../../context/AuthContext';
 import { getPostById, updatePost } from '../../services/postService';
-import { Colors } from '../../constants/Colors';
+import { colors } from '../../constants/Colors';
 import PrimaryButton from '../../components/ui/PrimaryButton';
 
 export default function EditPostScreen({ route, navigation }: any) {
@@ -13,7 +12,7 @@ export default function EditPostScreen({ route, navigation }: any) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string | null>(null);
@@ -37,6 +36,8 @@ export default function EditPostScreen({ route, navigation }: any) {
     { label: 'Returned', value: 'returned' },
     { label: 'Closed', value: 'closed' },
   ]);
+
+  const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   useEffect(() => {
     loadPost();
@@ -79,7 +80,7 @@ export default function EditPostScreen({ route, navigation }: any) {
       Alert.alert('Error', 'Failed to update post');
     } else {
       Alert.alert('Success', 'Post updated successfully!', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     }
   };
@@ -87,56 +88,83 @@ export default function EditPostScreen({ route, navigation }: any) {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Edit Post</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Title"
-          value={title}
-          onChangeText={setTitle}
-        />
-
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Description"
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          numberOfLines={4}
-        />
-
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Category</Text>
-          <DropDownPicker
-            open={open}
-            value={category}
-            items={categories}
-            setOpen={setOpen}
-            setValue={setCategory}
-            placeholder="Select Category"
-            style={styles.dropdown}
-          />
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Edit Post</Text>
+          <Text style={styles.subtitle}>Update your post details</Text>
         </View>
 
-        <View style={[styles.dropdownContainer, { zIndex: 999 }]}>
-          <Text style={styles.label}>Status</Text>
-          <DropDownPicker
-            open={statusOpen}
-            value={status}
-            items={statusItems}
-            setOpen={setStatusOpen}
-            setValue={setStatus}
-            placeholder="Select Status"
-            style={styles.dropdown}
-          />
+        <View style={styles.formCard}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Title</Text>
+            <TextInput
+              style={[styles.input, focusedInput === 'title' && styles.inputFocused]}
+              placeholder="Enter post title"
+              placeholderTextColor={colors.textMuted}
+              value={title}
+              onChangeText={setTitle}
+              onFocus={() => setFocusedInput('title')}
+              onBlur={() => setFocusedInput(null)}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={[
+                styles.input,
+                styles.textArea,
+                focusedInput === 'description' && styles.inputFocused,
+              ]}
+              placeholder="Enter description"
+              placeholderTextColor={colors.textMuted}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={5}
+              onFocus={() => setFocusedInput('description')}
+              onBlur={() => setFocusedInput(null)}
+            />
+          </View>
+
+          <View style={styles.dropdownBlock}>
+            <Text style={styles.label}>Category</Text>
+            <DropDownPicker
+              open={open}
+              value={category}
+              items={categories}
+              setOpen={setOpen}
+              setValue={setCategory}
+              placeholder="Select Category"
+              placeholderStyle={{ color: colors.textMuted }}
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownContainer}
+              listMode="SCROLLVIEW"
+            />
+          </View>
+
+          <View style={[styles.dropdownBlock, { zIndex: 999 }]}>
+            <Text style={styles.label}>Status</Text>
+            <DropDownPicker
+              open={statusOpen}
+              value={status}
+              items={statusItems}
+              setOpen={setStatusOpen}
+              setValue={setStatus}
+              placeholder="Select Status"
+              placeholderStyle={{ color: colors.textMuted }}
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownContainer}
+              listMode="SCROLLVIEW"
+            />
+          </View>
         </View>
 
         <PrimaryButton
@@ -153,48 +181,93 @@ export default function EditPostScreen({ route, navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 20,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  header: {
+    marginBottom: 18,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: Colors.text.primary,
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 4,
   },
-  input: {
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  formCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: 18,
     borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 15,
-    backgroundColor: Colors.white,
+    borderColor: colors.border,
   },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  dropdownContainer: {
-    marginBottom: 15,
-    zIndex: 1000,
+  inputGroup: {
+    marginBottom: 16,
   },
   label: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.textPrimary,
     marginBottom: 8,
-    color: Colors.text.primary,
+  },
+  input: {
+    height: 52,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    backgroundColor: colors.background,
+    fontSize: 15,
+    color: colors.textPrimary,
+  },
+  inputFocused: {
+    borderColor: colors.primary,
+    borderWidth: 2,
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  textArea: {
+    height: 120,
+    paddingTop: 14,
+    textAlignVertical: 'top',
+  },
+  dropdownBlock: {
+    marginBottom: 16,
+    zIndex: 1000,
   },
   dropdown: {
-    borderColor: Colors.border,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: 12,
+    backgroundColor: colors.background,
+    minHeight: 52,
+  },
+  dropdownContainer: {
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+    borderRadius: 12,
   },
   submitButton: {
-    marginTop: 20,
+    marginTop: 18,
   },
 });

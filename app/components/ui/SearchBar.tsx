@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/Colors';
+import { colors } from '../../constants/Colors';
 
 interface SearchBarProps {
   isLost: boolean;
@@ -11,21 +11,33 @@ interface SearchBarProps {
   navigation: any;
 }
 
-export default function SearchBar({ isLost, isSearching, setIsSearching, searchText, setSearchText, navigation }: SearchBarProps) {
+export default function SearchBar({
+  isLost,
+  isSearching,
+  setIsSearching,
+  searchText,
+  setSearchText,
+  navigation
+}: SearchBarProps) {
   return (
     <View style={styles.searchContainer}>
       {isSearching ? (
         <View style={styles.searchBar}>
-          <Text style={styles.searchLabel}>{isLost ? 'Lost' : 'Found'}</Text>
+          <View style={styles.searchLabel}>
+            <Text style={styles.searchLabelText}>{isLost ? 'Lost' : 'Found'}</Text>
+          </View>
           <TextInput
             style={styles.searchInput}
             placeholder="Search items..."
+            placeholderTextColor={colors.textMuted}
             value={searchText}
             onChangeText={setSearchText}
             autoFocus
           />
           <TouchableOpacity
             onPress={() => { setIsSearching(false); setSearchText(''); }}
+            style={styles.cancelButton}
+            activeOpacity={0.7}
           >
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
@@ -35,12 +47,15 @@ export default function SearchBar({ isLost, isSearching, setIsSearching, searchT
           <TouchableOpacity
             style={styles.searchButton}
             onPress={() => setIsSearching(true)}
+            activeOpacity={0.8}
           >
-            <Text style={styles.searchButtonText}>🔍 Search</Text>
+            <Text style={styles.searchIcon}>🔍</Text>
+            <Text style={styles.searchButtonText}>Search</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.advancedSearchButton}
             onPress={() => navigation.navigate('AdvancedSearch')}
+            activeOpacity={0.8}
           >
             <Text style={styles.advancedSearchText}>Advanced</Text>
           </TouchableOpacity>
@@ -51,65 +66,106 @@ export default function SearchBar({ isLost, isSearching, setIsSearching, searchT
 }
 
 const styles = StyleSheet.create({
-  searchContainer: { 
-    marginBottom: 10, 
-    paddingTop: 20, 
-    paddingLeft: 20,
-    paddingRight: 20 
+  searchContainer: {
+    marginBottom: 12,
+    paddingHorizontal: 16,
   },
   searchButtonContainer: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 12,
     alignItems: 'center',
   },
   searchButton: {
     flex: 1,
-    padding: 12,
-    backgroundColor: Colors.white,
+    flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.primary,
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    shadowColor: colors.textPrimary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  searchIcon: {
+    fontSize: 18,
   },
   searchButtonText: {
-    color: Colors.text.primary,
+    color: colors.textPrimary,
     fontSize: 16,
+    fontWeight: '600',
   },
   advancedSearchButton: {
     paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: Colors.primary,
-    borderRadius: 20,
+    paddingVertical: 14,
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   advancedSearchText: {
-    color: Colors.white,
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.primary,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    backgroundColor: Colors.white,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    backgroundColor: colors.surface,
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  searchLabel: {  
-    marginRight: 10,
-    borderRadius: 20,
-    backgroundColor: Colors.primary,
-    padding: 3,
-    paddingLeft: 10,
-    paddingRight: 10,
-    color: Colors.white,
+  searchLabel: {
+    marginRight: 12,
+    borderRadius: 8,
+    backgroundColor: colors.primary,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
   },
-  searchInput: { 
-    flex: 1, 
-    height: 40 
+  searchLabelText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  searchInput: {
+    flex: 1,
+    height: 44,
+    fontSize: 16,
+    color: colors.textPrimary,
+  },
+  cancelButton: {
+    marginLeft: 8,
+    paddingHorizontal: 8,
   },
   cancelText: {
-    marginLeft: 10,
-    color: Colors.primary,
+    color: colors.accent,
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

@@ -1,19 +1,38 @@
+export const colors = {
+  primary: "#6FAF9C",
+  primarySoft: "#E6F3EF",
+  primaryDark: "#3E7F6F",
+
+  background: "#FFFFFF",
+  surface: "#F7F9F8",
+  border: "#D9E5E1",
+
+  textPrimary: "#1F2933",
+  textSecondary: "#6B7280",
+  textMuted: "#9CA3AF",
+
+  accent: "#5FA8D3",
+  danger: "#E05A5A",
+  success: "#4CAF8C",
+};
+
+// Legacy support - keeping old Colors export for gradual migration
 export const Colors = {
-  primary: '#50A296',
-  primaryLight: '#58b1a3',
-  primaryDark: '#3d7f75',
-  background: '#D0E1D7',
-  white: '#FFFFFF',
-  black: '#000000',
-  gray: '#808080',
-  lightGray: '#E0E0E0',
-  error: '#FF3B30',
-  success: '#34C759',
-  warning: '#FF9500',
+  primary: colors.primary,
+  primaryLight: colors.primarySoft,
+  primaryDark: colors.primaryDark,
+  background: colors.background,
+  white: colors.background,
+  black: colors.textPrimary,
+  gray: colors.textSecondary,
+  lightGray: colors.surface,
+  error: colors.danger,
+  success: colors.success,
+  warning: "#FF9500",
   text: {
-    primary: '#000000',
-    secondary: '#666666',
-    light: '#FFFFFF',
+    primary: colors.textPrimary,
+    secondary: colors.textSecondary,
+    light: "#FFFFFF",
   },
-  border: '#CCCCCC',
+  border: colors.border,
 };

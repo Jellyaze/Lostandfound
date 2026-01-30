@@ -1,14 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, Modal, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  Modal,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  getMessages, 
-  sendMessage, 
+import {
+  getMessages,
+  sendMessage,
   sendImageMessage,
   sendFileMessage,
-  markMessagesAsRead, 
+  markMessagesAsRead,
   subscribeToMessages,
   editMessage,
   deleteMessage,
@@ -16,7 +28,7 @@ import {
   subscribeToTypingIndicators,
 } from '../../services/messageService';
 import { Message } from '../../types/message.types';
-import { Colors } from '../../constants/Colors';
+import { colors } from '../../constants/Colors';
 import MessageBubble from '../../components/messaging/MessageBubble';
 import TypingIndicator from '../../components/messaging/TypingIndicator';
 import ImagePickerModal from '../../components/messaging/ImagePickerModal';
@@ -81,16 +93,13 @@ export default function ChatScreen({ route, navigation }: any) {
   const handleTextChange = (text: string) => {
     setInputText(text);
 
-    // Send typing indicator
     if (user) {
       setTypingIndicator(conversationId, user.id, text.length > 0);
 
-      // Clear previous timeout
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
 
-      // Stop typing after 2 seconds of inactivity
       typingTimeoutRef.current = setTimeout(() => {
         setTypingIndicator(conversationId, user.id, false);
       }, 2000);
@@ -103,12 +112,10 @@ export default function ChatScreen({ route, navigation }: any) {
     setLoading(true);
 
     if (editingMessageId) {
-      // Edit existing message
       const { error } = await editMessage(editingMessageId, inputText.trim());
       if (error) {
         Alert.alert('Error', 'Failed to edit message');
       } else {
-        // Update local state
         setMessages(prev =>
           prev.map(msg =>
             msg.id === editingMessageId
@@ -119,7 +126,6 @@ export default function ChatScreen({ route, navigation }: any) {
         setEditingMessageId(null);
       }
     } else {
-      // Send new message
       const { error } = await sendMessage(conversationId, user.id, inputText.trim());
       if (error) {
         Alert.alert('Error', 'Failed to send message');
@@ -158,7 +164,6 @@ export default function ChatScreen({ route, navigation }: any) {
       const file = result.assets[0];
       const fileSize = await getFileSize(file.uri);
 
-      // Check file size (max 10MB)
       if (fileSize > 10 * 1024 * 1024) {
         Alert.alert('Error', 'File size must be less than 10MB');
         return;
@@ -255,24 +260,39 @@ export default function ChatScreen({ route, navigation }: any) {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>← Back</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
+
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Chat</Text>
-          <Text style={styles.headerSubtitle}>User {otherUserId.substring(0, 8)}</Text>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>👤</Text>
+          </View>
+          <View style={styles.headerInfo}>
+            <Text style={styles.headerTitle}>Chat</Text>
+            <Text style={styles.headerSubtitle}>User {otherUserId.substring(0, 8)}</Text>
+          </View>
         </View>
-        <TouchableOpacity onPress={() => {
-          Alert.alert(
-            'Options',
-            '',
-            [
-              { text: 'Search Messages', onPress: () => Alert.alert('Coming Soon', 'Search functionality will be added soon') },
-              { text: 'Cancel', style: 'cancel' },
-            ]
-          );
-        }}>
-          <Text style={styles.moreButton}>⋮</Text>
+
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              'Options',
+              '',
+              [
+                { text: 'Search Messages', onPress: () => Alert.alert('Coming Soon', 'Search functionality will be added soon') },
+                { text: 'Cancel', style: 'cancel' },
+              ]
+            );
+          }}
+          style={styles.moreButton}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.moreButtonText}>⋮</Text>
         </TouchableOpacity>
       </View>
 
@@ -289,44 +309,56 @@ export default function ChatScreen({ route, navigation }: any) {
           contentContainerStyle={styles.messagesList}
           onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
           ListFooterComponent={isTyping ? <TypingIndicator /> : null}
+          showsVerticalScrollIndicator={false}
         />
 
         {editingMessageId && (
           <View style={styles.editingBanner}>
             <Text style={styles.editingText}>Editing message</Text>
-            <TouchableOpacity onPress={() => {
-              setEditingMessageId(null);
-              setInputText('');
-            }}>
+            <TouchableOpacity
+              onPress={() => {
+                setEditingMessageId(null);
+                setInputText('');
+              }}
+              activeOpacity={0.7}
+            >
               <Text style={styles.cancelEdit}>Cancel</Text>
             </TouchableOpacity>
           </View>
         )}
 
         <View style={styles.inputContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.attachButton}
             onPress={() => setImagePickerVisible(true)}
+            activeOpacity={0.8}
           >
             <Text style={styles.attachIcon}>📷</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.attachButton}
             onPress={handleFilePick}
+            activeOpacity={0.8}
           >
             <Text style={styles.attachIcon}>📎</Text>
           </TouchableOpacity>
+
           <TextInput
             style={styles.input}
             value={inputText}
             onChangeText={handleTextChange}
             placeholder={editingMessageId ? "Edit message..." : "Type a message..."}
+            placeholderTextColor={colors.textMuted}
             multiline
+            maxLength={500}
           />
+
           <TouchableOpacity
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
             onPress={handleSend}
             disabled={!inputText.trim() || loading}
+            activeOpacity={0.8}
           >
             <Text style={styles.sendIcon}>{editingMessageId ? '✓' : '➤'}</Text>
           </TouchableOpacity>
@@ -344,7 +376,7 @@ export default function ChatScreen({ route, navigation }: any) {
         transparent
         onRequestClose={() => setSelectedImageUrl(null)}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.imageModalOverlay}
           activeOpacity={1}
           onPress={() => setSelectedImageUrl(null)}
@@ -361,114 +393,132 @@ export default function ChatScreen({ route, navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
+  container: { flex: 1, backgroundColor: colors.background },
+
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: Colors.white,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGray,
+    borderBottomColor: colors.border,
   },
   backButton: {
-    fontSize: 16,
-    color: Colors.primary,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: colors.primarySoft,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  backButtonText: {
+    fontSize: 20,
+    color: colors.primary,
+    fontWeight: '600',
   },
   headerCenter: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text.primary,
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primarySoft,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
-  headerSubtitle: {
-    fontSize: 12,
-    color: Colors.text.secondary,
-  },
+  avatarText: { fontSize: 20 },
+  headerInfo: { flex: 1 },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: colors.textPrimary },
+  headerSubtitle: { fontSize: 12, color: colors.textSecondary, marginTop: 2, fontWeight: '500' },
   moreButton: {
-    fontSize: 24,
-    color: Colors.text.primary,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: colors.primarySoft,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  content: {
-    flex: 1,
-  },
-  messagesList: {
-    padding: 15,
-  },
+  moreButtonText: { fontSize: 20, color: colors.textPrimary },
+
+  content: { flex: 1 },
+  messagesList: { padding: 16, flexGrow: 1 },
+
   editingBanner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: Colors.primaryLight,
-    padding: 10,
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
   },
-  editingText: {
-    color: Colors.white,
-    fontSize: 14,
-  },
-  cancelEdit: {
-    color: Colors.white,
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
+  editingText: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' },
+  cancelEdit: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
+
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: Colors.white,
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: Colors.lightGray,
+    borderTopColor: colors.border,
   },
   attachButton: {
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 5,
-  },
-  attachIcon: {
-    fontSize: 20,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    marginRight: 10,
-    maxHeight: 100,
-  },
-  sendButton: {
     width: 40,
     height: 40,
-    backgroundColor: Colors.primary,
-    borderRadius: 20,
+    borderRadius: 10,
+    backgroundColor: colors.primarySoft,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 8,
+  },
+  attachIcon: { fontSize: 18 },
+
+  input: {
+    flex: 1,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginRight: 10,
+    maxHeight: 110,
+    fontSize: 15,
+    color: colors.textPrimary,
+    backgroundColor: colors.background,
+  },
+  sendButton: {
+    width: 44,
+    height: 44,
+    backgroundColor: colors.primary,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   sendButtonDisabled: {
-    backgroundColor: Colors.gray,
+    backgroundColor: colors.textMuted,
     opacity: 0.5,
+    shadowOpacity: 0,
+    elevation: 0,
   },
-  sendIcon: {
-    color: Colors.white,
-    fontSize: 18,
-  },
+  sendIcon: { color: '#FFFFFF', fontSize: 18, fontWeight: '600' },
+
   imageModalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  fullscreenImage: {
-    width: '100%',
-    height: '100%',
-  },
+  fullscreenImage: { width: '100%', height: '100%' },
 });
